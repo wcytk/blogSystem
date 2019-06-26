@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wcytk.dao.ArticleDao">
+    <resultMap id="ArticleResult" type="com.wcytk.entity.Article">
+        <id property="id" column="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="thumbNum" property="thumbNum"/>
+        <result column="collectNum" property="collectNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="updateTime" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectUserArticles" parameterType="int" resultMap="ArticleResult">
+        SELECT * FROM article WHERE id = #{id} ORDER BY publishTime DESC
+    </select>
+
+    <select id="selectAllUserArticles" parameterType="int" resultMap="ArticleResult">
+        SELECT * FROM article ORDER BY publishTime DESC
+    </select>
+
+    <select id="SelectAllArticles" parameterType="int" resultMap="ArticleResult">
+        SELECT * FROM article WHERE user_id = #{user_id} ORDER BY publishTime DESC
+    </select>
+
+    <select id="SelectArticlesById" parameterType="int" resultMap="ArticleResult">
+        SELECT * FROM article WHERE id = #{id} AND user_id = #{user_id}
+    </select>
+
+    <insert id="AddArticle" parameterType="com.wcytk.entity.Article" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO article (user_id, title, content, thumbNum, collectNum, publishTime, updateTime)
+        VALUES (#{user_id}, #{title}, #{content}, #{thumbNum}, #{collectNum}, #{publishTime}, #{updateTime})
+    </insert>
+
+    <delete id="DeleteArticleById" parameterType="int">
+        DELETE FROM article WHERE id = #{id} AND user_id = #{user_id}
+    </delete>
+
+    <update id="UpdateArticleById" parameterType="com.wcytk.entity.Article">
+        UPDATE article
+        SET title = #{title}, content = #{content}, thumbNum = #{thumbNum}, collectNum = #{collectNum},
+        updateTime = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <update id="UpdateThumbNumById" parameterType="int">
+        UPDATE article
+        SET thumbNum = #{thumbNum}
+        WHERE id = #{id}
+    </update>
+
+    <update id="UpdateCollectNumById" parameterType="int">
+        UPDATE article
+        SET collectNum = #{collectNum}
+        WHERE id = #{id}
+    </update>
+
+    <select id="searchArticles" resultMap="ArticleResult" parameterType="String">
+      SELECT * FROM article WHERE title LIKE CONCAT('%',#{search,jdbcType = VARCHAR},'%')OR content LIKE CONCAT('%',#{search,jdbcType = VARCHAR},'%') ORDER BY publishTime DESC
+    </select>
+
+    <select id="searchMyArticles" resultMap="ArticleResult">
+      SELECT * FROM article WHERE title LIKE CONCAT('%',#{search,jdbcType = VARCHAR},'%')OR content LIKE CONCAT('%',#{search,jdbcType = VARCHAR},'%') AND user_id = #{user_id} ORDER BY publishTime DESC
+    </select>
+
+    <select id="adminArticles" resultMap="ArticleResult">
+      SELECT * FROM article
+    </select>
+
+    <delete id="adminDeleteArticle" parameterType="int">
+      DELETE FROM article WHERE id=#{id}
+    </delete>
+
+    <insert id="adminAddArticle" parameterType="com.wcytk.entity.Article" keyProperty="id" useGeneratedKeys="true">
+      INSERT INTO article (user_id, title, content, thumbNum, collectNum, publishTime, updateTime)
+      VALUES (#{user_id}, #{title}, #{content}, #{thumbNum}, #{collectNum}, #{publishTime}, #{updateTime})
+    </insert>
+
+    <update id="adminUpdateArticleById" parameterType="com.wcytk.entity.Article">
+        UPDATE article
+        SET user_id = #{user_id}, title = #{title}, content = #{content}, thumbNum = #{thumbNum},
+        collectNum = #{collectNum}, updateTime = #{updateTime}
+        WHERE id = #{id}
+    </update>
+</mapper>
